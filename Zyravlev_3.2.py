@@ -1,17 +1,38 @@
 import requests
-import pprint
 
 
-url_cart = 'https://fakestoreapi.com/carts'
-url_product = 'https://fakestoreapi.com/products'
-url_user = 'https://fakestoreapi.com/users'
-response_cart = requests.get(url_cart).json()
-# pprint.pprint(response_cart)
-response_product = requests.get(url_product).json()
-# pprint.pprint(response_product)
-response_user = requests.get(url_user).json()
-pprint.pprint(response_user)
+url_cart = 'https://fakestoreapi.com/carts/user/'
+url_product = 'https://fakestoreapi.com/products/'
+url_user = 'https://fakestoreapi.com/users/'
+url_users = 'https://fakestoreapi.com/user'
 
-user = input('Введите имя пользователя или его ID: ')
-# if user.isalpha():
-    
+response_users = requests.get(url_user).json() 
+
+x_user = input('Введите username пользователя или его ID: ')
+id_x_user = x_user
+if not x_user.isdigit():
+    for user in response_users:
+        if user['username'] == x_user:
+            id_x_user = str(user['id'])
+
+response_cart = requests.get(url_cart + id_x_user).json()
+
+sp_products = dict()
+try:
+    for prod in response_cart:
+        for cart in prod['products']:
+            if sp_products.get(cart['productId']):
+                sp_products[cart['productId']] = sp_products[cart['productId']] + cart['quantity']
+            else:
+                sp_products[cart['productId']] = cart['quantity']
+
+    if len(sp_products) == 0:
+        print('Ничего не куплено')
+    else:
+        print('Куплено:')
+        for key, value in sp_products.items():
+            resp = requests.get(url_product + str(key)).json()
+            print(f' {value}  {resp['title']}')
+
+except TypeError:
+    print('Ввели что-то не то')
