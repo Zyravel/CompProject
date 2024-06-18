@@ -32,7 +32,7 @@ try:
         print('Куплено:')
         for key, value in sp_products.items():
             resp = requests.get(url_product + str(key)).json()
-            print(f' {value}  {resp['title']}')
+            print(f'    {value}  {resp['title']}')
 
 except TypeError:
     print('Ввели что-то не то')
